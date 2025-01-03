@@ -1,0 +1,35 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gallery-section {
+  animation: fadeInUp 1.2s ease-out;
+}
+
+.gallery-title {
+  animation: fadeInUp 1.2s ease-out 0.4s;
+  animation-fill-mode: both;
+}
+
+.gallery-description {
+  animation: fadeInUp 1.2s ease-out 0.8s;
+  animation-fill-mode: both;
+}
+
+.gallery-button {
+  animation: fadeInUp 1.2s ease-out 1.2s;
+  animation-fill-mode: both;
+  transition: all 0.4s ease;
+}
+
+.gallery-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+} 
