@@ -1,23 +1,33 @@
 .container {
-    @apply w-full mx-auto;
+    padding: 1rem;
+    min-height: 100vh;
+}
+
+.formContainer {
+    background-color: #E6F0FF;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formHeader {
+    margin-bottom: 2rem;
+}
+
+.formTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
 }
 
 .formWrapper {
     @apply bg-white rounded-lg border border-gray-200 shadow-sm mb-6;
 }
 
-.formHeader {
-    @apply bg-white rounded-t-lg border-b border-gray-200 p-4;
-    position: relative;
-}
-
 .headerContent {
     @apply flex items-center justify-between;
     gap: 1rem;
-}
-
-.formTitle {
-    @apply text-lg font-medium text-gray-900;
 }
 
 .headerButton {
