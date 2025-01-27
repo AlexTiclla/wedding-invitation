@@ -63,7 +63,8 @@ class FlipClock extends Component {
 			minutesShuffle: true,
 			seconds: 0,
 			secondsShuffle: true,
-			isWeddingDay: false
+			isWeddingDay: false,
+			eventPassed: false
 		};
 	}
 
@@ -76,32 +77,60 @@ class FlipClock extends Component {
 	}
 
 	updateTime() {
-		// Fecha objetivo: 25 de Enero 2025, 00:00 hora de Bolivia (UTC-4)
-		const targetDate = new Date(Date.UTC(2025, 0, 25, 4, 0, 0)); // 00:00 Bolivia = 04:00 UTC
-		
-		// Fecha actual en Bolivia
+		// Fecha actual sin hora (solo día)
 		const currentDate = new Date();
-		const boliviaOffset = -4 * 60; // UTC-4 en minutos
-		const localOffset = currentDate.getTimezoneOffset();
-		const totalOffset = (boliviaOffset + localOffset) * 60 * 1000; // Convertir a milisegundos
+		const currentDateWithoutTime = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth(),
+			currentDate.getDate()
+		);
+
+		// Fecha del evento
+		const eventDate = new Date(2025, 0, 25); // 25 de enero 2025
 		
-		// Diferencia en milisegundos entre las dos fechas, ajustada a hora Bolivia
-		const difference = targetDate - (currentDate.getTime() + totalOffset);
+		// Fecha del día anterior al evento
+		const dayBeforeEvent = new Date(2025, 0, 24, 23, 59, 59);
 		
-		// Cálculo corregido de meses y días
+		// Caso 3: El evento ya pasó
+		if (currentDateWithoutTime > eventDate) {
+			this.setState({ 
+				isWeddingDay: true,
+				eventPassed: true,
+				months: 0,
+				days: 0,
+				hours: 0,
+				minutes: 0,
+				seconds: 0
+			});
+			return;
+		}
+		
+		// Caso 2: Es el día del evento
+		if (currentDateWithoutTime.getTime() === eventDate.getTime()) {
+			this.setState({ 
+				isWeddingDay: true,
+				eventPassed: false,
+				months: 0,
+				days: 0,
+				hours: 0,
+				minutes: 0,
+				seconds: 0
+			});
+			return;
+		}
+		
+		// Caso 1: Aún no es el día del evento, mostrar countdown
+		const difference = dayBeforeEvent - currentDate;
+		
+		// Cálculo de tiempo restante
 		const totalDays = Math.floor(difference / (1000 * 60 * 60 * 24));
 		const months = Math.floor(totalDays / 30);
 		const days = Math.floor(totalDays % 30);
-		
 		const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-		const minutes = Math.floor((difference / (1000 * 60)) % 60);
+		const minutes = Math.floor((difference / 1000 / 60) % 60);
 		const seconds = Math.floor((difference / 1000) % 60);
 
-		// Verificar si es el día de la boda (solo actualizamos isWeddingDay)
-		if (months === 0 && days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-			this.setState({ isWeddingDay: true });
-		}
-
+		// Actualizaciones de estado...
 		if (months !== this.state.months) {
 			const monthsShuffle = !this.state.monthsShuffle;
 			this.setState({ months, monthsShuffle });
@@ -132,22 +161,38 @@ class FlipClock extends Component {
 		const { 
 			months, days, hours, minutes, seconds, 
 			monthsShuffle, daysShuffle, hoursShuffle, minutesShuffle, secondsShuffle,
-			isWeddingDay 
+			isWeddingDay, eventPassed 
 		} = this.state;
 
 		return (
 			<FeatureWrapper featureKey="LIVE_COUNTDOWN">
 				{isWeddingDay ? (
-					<div className="text-center text-white">
-						<h2 className="!text-[32px] mt-2 drop-shadow-lg !lg:text-[48px] font-bold font-poppins mb-4">
-							¡Hoy es el gran día! 🎉
-						</h2>
-						<p className="text-xl lg:text-2xl font-medium">
-							¡Gracias por ser parte de nuestra historia! ❤️
-						</p>
-					</div>
+					eventPassed ? (
+						// Caso 3: El evento ya pasó
+						<div className="text-center text-white">
+							<h2 className="!text-[32px] mt-2 drop-shadow-lg !lg:text-[48px] font-bold font-poppins mb-4">
+								¡Gracias por su cariño! ❤️
+							</h2>
+							<p className="text-xl lg:text-2xl font-medium">
+								El evento ha finalizado.
+							</p>
+							<p className="text-lg lg:text-xl font-medium mt-4">
+								Agradecemos su presencia y buenos deseos.
+							</p>
+						</div>
+					) : (
+						// Caso 2: Es el día del evento
+						<div className="text-center text-white">
+							<h2 className="!text-[32px] mt-2 drop-shadow-lg !lg:text-[48px] font-bold font-poppins mb-4">
+								¡Hoy es el gran día! 🎉
+							</h2>
+							<p className="text-xl lg:text-2xl font-medium">
+								¡Gracias por ser parte de nuestra historia! ❤️
+							</p>
+						</div>
+					)
 				) : (
-					// Contador normal
+					// Caso 1: Countdown normal
 					<>
 						<h2 className="text-center text-white !text-[20px] mt-2 drop-shadow-lg !lg:text-[24px] font-medium font-poppins">
 							Celebremos nuestra boda juntos este:
