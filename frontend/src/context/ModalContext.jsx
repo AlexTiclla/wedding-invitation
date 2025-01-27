@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const ModalContext = createContext({
    modal: false,
@@ -51,7 +51,7 @@ export const ModalProvider = ({ children }) => {
       };
    }, []);
 
-   const contextValue = {
+   const value = {
       modal,
       setModal,
       confirmationModal,
@@ -67,7 +67,7 @@ export const ModalProvider = ({ children }) => {
    };
 
    return (
-      <ModalContext.Provider value={contextValue}>
+      <ModalContext.Provider value={value}>
          {children}
       </ModalContext.Provider>
    );

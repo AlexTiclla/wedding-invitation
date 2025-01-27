@@ -5,13 +5,15 @@ import { useContext, useEffect } from "react"
 
 const Button = ( { buttonText, colorCode, url, action, disabled } ) => {
    
-   const { setModal, setConfirmationModal, setWeatherModal, sent, setHistoryModal } = useContext(ModalContext);
+   const { setModal, setConfirmationModal, setWeatherModal, sent, setIsHistoryModalOpen } = useContext(ModalContext);
 
    useEffect(() => {
       // Manejar el hash al cargar y cuando cambie
       const handleHash = () => {
          if (window.location.hash === '#confirmar') {
             setConfirmationModal(true);
+         } else if (window.location.hash === '#historia') {
+            setIsHistoryModalOpen(true);
          }
       };
 
@@ -19,7 +21,7 @@ const Button = ( { buttonText, colorCode, url, action, disabled } ) => {
       window.addEventListener('hashchange', handleHash);
 
       return () => window.removeEventListener('hashchange', handleHash);
-   }, [setConfirmationModal]);
+   }, [setConfirmationModal, setIsHistoryModalOpen]);
 
    const handleForm = () => {
       switch(action) {
@@ -27,11 +29,12 @@ const Button = ( { buttonText, colorCode, url, action, disabled } ) => {
             setWeatherModal(true);
             break;
          case 'openHistoryModal':
-            setHistoryModal(true);
+            setIsHistoryModalOpen(true);
+            window.location.hash = 'historia';
             break;
          case 'openConfirmationModal':
             setConfirmationModal(true);
-            window.location.hash = 'confirmar'; // Añadir hash al abrir el modal
+            window.location.hash = 'confirmar';
             break;
          case 'openInfoModal':
             setModal(true);

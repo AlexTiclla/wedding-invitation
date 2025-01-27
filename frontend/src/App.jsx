@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from "./pages/Layout"
-import ModalProvider from "./context/ModalContext"
+import { ModalProvider } from './context/ModalContext'
 import { Analytics } from '@vercel/analytics/react'
 import AdminLogin from './pages/AdminLogin'
 import FeatureFlagsPanel from './components/admin/FeatureFlagsPanel'

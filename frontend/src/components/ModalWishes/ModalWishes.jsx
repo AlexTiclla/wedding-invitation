@@ -16,6 +16,7 @@ const ModalWishes = () => {
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [isSuccess, setIsSuccess] = useState(false);
    const [error, setError] = useState(null);
+   const [successMessage, setSuccessMessage] = useState('');
 
    // Resetear el formulario cuando se abre el modal
    useEffect(() => {
@@ -73,11 +74,13 @@ const ModalWishes = () => {
 
          if (response.data.success) {
             setIsSuccess(true);
+            setSuccessMessage(`¡Gracias ${formData.name} por tus buenos deseos!`);
             setTimeout(() => {
                setWishesModal(false);
                setFormData({ name: '', message: '' });
                setIsSuccess(false);
-            }, 2000);
+               setSuccessMessage('');
+            }, 3000);
          }
       } catch (error) {
          console.error('Error:', error);
@@ -190,19 +193,28 @@ const ModalWishes = () => {
             </form>
 
             <div className="wishes-footer">
-               <button 
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || isSuccess || !formData.name.trim() || !formData.message.trim()}
-                  className="wishes-submit-btn"
-               >
-                  {isSuccess ? (
-                     <>¡Mensaje Enviado! <Heart size={20} weight="fill" /></>
-                  ) : isSubmitting ? (
-                     'Enviando...'
-                  ) : (
-                     <>Enviar Felicitación <PaperPlaneTilt size={20} weight="fill" /></>
-                  )}
-               </button>
+               {isSuccess ? (
+                  <div className="success-message flex flex-col items-center gap-2 text-center p-4">
+                     <Heart size={32} weight="fill" className="text-red-500 animate-pulse" />
+                     <p className="text-lg font-medium text-green-600">{successMessage}</p>
+                     <p className="text-sm text-gray-600">Tu mensaje ha sido enviado con éxito</p>
+                  </div>
+               ) : (
+                  <button 
+                     onClick={handleSubmit}
+                     disabled={isSubmitting || !formData.name.trim() || !formData.message.trim()}
+                     className="wishes-submit-btn"
+                  >
+                     {isSubmitting ? (
+                        'Enviando...'
+                     ) : (
+                        <>Enviar Felicitación <PaperPlaneTilt size={20} weight="fill" /></>
+                     )}
+                  </button>
+               )}
+               {error && (
+                  <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+               )}
             </div>
          </div>
       </div>
