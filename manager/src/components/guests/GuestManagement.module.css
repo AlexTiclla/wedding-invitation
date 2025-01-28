@@ -42,6 +42,12 @@
 
 .form {
     @apply space-y-6;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.form.visible {
+    opacity: 1;
 }
 
 .formGrid {
@@ -167,5 +173,42 @@
 
 .noPartnersMessage {
     @apply text-gray-500 text-sm mt-2 mb-4 italic;
+}
+
+.accordion {
+    margin-bottom: 1rem;
+}
+
+.accordionHeader {
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.accordionContent {
+    transition: all 0.3s ease-in-out;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.submitButton {
+    @apply bg-blue-500 text-white px-4 py-2 rounded-lg
+    flex items-center justify-center
+    min-w-[160px] h-10
+    transition-all duration-200;
+}
+
+.submitButton:hover:not(:disabled) {
+    @apply bg-blue-600 transform scale-[1.02];
+}
+
+.submitButton:disabled {
+    @apply bg-blue-300 cursor-not-allowed;
+}
+
+.submitButton:active:not(:disabled) {
+    @apply transform scale-[0.98];
 }
 
