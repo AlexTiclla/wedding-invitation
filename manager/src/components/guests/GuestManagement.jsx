@@ -7,6 +7,7 @@ import { useGuestsContext } from '../../context/GuestsContext';
 const GuestManagement = ({ onInteraction }) => {
     const { fetchGuests } = useGuestsContext();
     const [isLoading, setIsLoading] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
         phone: '',
@@ -230,170 +231,250 @@ const GuestManagement = ({ onInteraction }) => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.formWrapper}>
-                <div className={styles.formHeader}>
-                    <div className={styles.headerContent}>
-                        <h2 className={styles.formTitle}>Agregar Nuevo Invitado</h2>
-                        <button 
-                            type="button"
-                            onClick={(e) => {
-                                handleSubmit(e);
-                                handleFormInteraction();
-                            }}
-                            className={styles.headerButton}
-                            disabled={isLoading}
-                            style={{
-                                backgroundColor: isLoading ? '#93c5fd' : '#3b82f6',
-                                cursor: isLoading ? 'not-allowed' : 'pointer',
-                                color: 'white',
-                                padding: '8px 16px',
-                                borderRadius: '6px',
-                                fontWeight: '500',
-                                minWidth: '120px',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                            }}
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center justify-center">
-                                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                                    </svg>
-                                    Guardando...
-                                </span>
-                            ) : 'Guardar Invitado'}
-                        </button>
-                    </div>
-                </div>
-
-                <div className={styles.managementWrapper}>
-                    <form 
-                        onSubmit={(e) => {
-                            handleSubmit(e);
-                            handleFormInteraction();
-                        }} 
-                        className={styles.form}
-                        onClick={handleFormInteraction}
+            <div className={styles.content}>
+                <div className={`${styles.accordion} ${isExpanded ? styles.expanded : ''} shadow-sm`}>
+                    <button 
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="w-full p-3 flex justify-between items-center bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                        type="button"
                     >
-                        <div className={styles.formGrid}>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="fullName" className={styles.label}>
-                                    <span className={styles.requiredLabel}>Nombre Completo</span>
-                                    <span className={styles.requiredAsterisk}>*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    id="fullName"
-                                    value={formData.fullName}
-                                    onChange={handleNameChange}
-                                    onFocus={handleFormInteraction}
-                                    className={`${styles.input} ${errors.fullName ? styles.inputError : ''}`}
-                                    placeholder="Ej: José Feliciano"
-                                    required
+                        <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                                {isExpanded ? 'Cancelar' : 'Agregar Nuevo Invitado'}
+                            </span>
+                            <svg 
+                                className={`w-5 h-5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
+                                <path 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round" 
+                                    strokeWidth={2} 
+                                    d="M19 9l-7 7-7-7" 
                                 />
-                                {errors.fullName && (
-                                    <span className={styles.errorMessage}>
-                                        {errors.fullName}
-                                    </span>
-                                )}
-                            </div>
+                            </svg>
+                        </div>
+                    </button>
 
-                            <div className={styles.formGroup}>
-                                <label htmlFor="phone" className={styles.label}>
-                                    <span className={styles.requiredLabel}>Teléfono</span>
-                                    <span className={styles.requiredAsterisk}>*</span>
-                                </label>
-                                <div className={styles.phoneInputWrapper}>
-                                    <span className={styles.phonePrefix}>+591</span>
+                    <div 
+                        className={`${styles.accordionContent} overflow-hidden transition-all duration-300 ease-in-out bg-white rounded-b-lg`}
+                        style={{
+                            maxHeight: isExpanded ? '2000px' : '0',
+                            visibility: isExpanded ? 'visible' : 'hidden',
+                            padding: isExpanded ? '1rem' : '0 1rem'
+                        }}
+                    >
+                        <form 
+                            onSubmit={async (e) => {
+                                await handleSubmit(e);
+                                if (onInteraction) onInteraction();
+                                setIsExpanded(false);
+                            }} 
+                            className={`${styles.form} ${isExpanded ? styles.visible : ''}`}
+                        >
+                            <div className={styles.formGrid}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="fullName" className={styles.label}>
+                                        <span className={styles.requiredLabel}>Nombre Completo</span>
+                                        <span className={styles.requiredAsterisk}>*</span>
+                                    </label>
                                     <input
-                                        type="tel"
-                                        id="phone"
-                                        value={formData.phone}
-                                        onChange={handlePhoneChange}
+                                        type="text"
+                                        id="fullName"
+                                        value={formData.fullName}
+                                        onChange={handleNameChange}
                                         onFocus={handleFormInteraction}
-                                        className={`${styles.phoneInput} ${errors.phone ? styles.inputError : ''}`}
-                                        placeholder="70707070"
+                                        className={`${styles.input} ${errors.fullName ? styles.inputError : ''}`}
+                                        placeholder="Ej: José Feliciano"
                                         required
                                     />
+                                    {errors.fullName && (
+                                        <span className={styles.errorMessage}>
+                                            {errors.fullName}
+                                        </span>
+                                    )}
                                 </div>
-                                {errors.phone && (
-                                    <span className={styles.errorMessage}>
-                                        {errors.phone}
-                                    </span>
-                                )}
-                            </div>
 
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>
-                                    <span className={styles.requiredLabel}>Asistencia a Iglesia</span>
-                                    <span className={styles.requiredAsterisk}>*</span>
-                                </label>
-                                <div className={styles.radioGroup}>
-                                    <label className={styles.radioLabel}>
-                                        <input
-                                            type="radio"
-                                            name="assistChurch"
-                                            checked={formData.assistChurch === true}
-                                            onChange={() => setFormData({...formData, assistChurch: true})}
-                                            className={styles.radio}
-                                        />
-                                        <span>Sí</span>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="phone" className={styles.label}>
+                                        <span className={styles.requiredLabel}>Teléfono</span>
+                                        <span className={styles.requiredAsterisk}>*</span>
                                     </label>
-                                    <label className={styles.radioLabel}>
+                                    <div className={styles.phoneInputWrapper}>
+                                        <span className={styles.phonePrefix}>+591</span>
                                         <input
-                                            type="radio"
-                                            name="assistChurch"
-                                            checked={formData.assistChurch === false}
-                                            onChange={() => setFormData({...formData, assistChurch: false})}
-                                            className={styles.radio}
+                                            type="tel"
+                                            id="phone"
+                                            value={formData.phone}
+                                            onChange={handlePhoneChange}
+                                            onFocus={handleFormInteraction}
+                                            className={`${styles.phoneInput} ${errors.phone ? styles.inputError : ''}`}
+                                            placeholder="70707070"
+                                            required
                                         />
-                                        <span>No</span>
-                                    </label>
+                                    </div>
+                                    {errors.phone && (
+                                        <span className={styles.errorMessage}>
+                                            {errors.phone}
+                                        </span>
+                                    )}
                                 </div>
-                            </div>
 
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>
-                                    <span className={styles.requiredLabel}>Asistencia a Boda</span>
-                                    <span className={styles.requiredAsterisk}>*</span>
-                                </label>
-                                <div className={styles.radioGroup}>
-                                    <label className={styles.radioLabel}>
-                                        <input
-                                            type="radio"
-                                            name="assist"
-                                            checked={formData.assist === true}
-                                            onChange={() => setFormData({...formData, assist: true})}
-                                            className={styles.radio}
-                                        />
-                                        <span>Sí</span>
-                                    </label>
-                                    <label className={styles.radioLabel}>
-                                        <input
-                                            type="radio"
-                                            name="assist"
-                                            checked={formData.assist === false}
-                                            onChange={() => setFormData({...formData, assist: false})}
-                                            className={styles.radio}
-                                        />
-                                        <span>No</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className={`${styles.formGroup} col-span-1 sm:col-span-2`}>
-                                <div className={styles.partnersHeader}>
+                                <div className={styles.formGroup}>
                                     <label className={styles.label}>
-                                        Acompañantes ({formData.partnersName.length}/3)
+                                        <span className={styles.requiredLabel}>Asistencia a Iglesia</span>
+                                        <span className={styles.requiredAsterisk}>*</span>
                                     </label>
-                                    {formData.partnersName.length < 3 && (
-                                        <button
-                                            type="button"
-                                            onClick={handleAddPartner}
-                                            className={styles.addPartnerButton}
-                                        >
+                                    <div className={styles.radioGroup}>
+                                        <label className={styles.radioLabel}>
+                                            <input
+                                                type="radio"
+                                                name="assistChurch"
+                                                checked={formData.assistChurch === true}
+                                                onChange={() => setFormData({...formData, assistChurch: true})}
+                                                className={styles.radio}
+                                            />
+                                            <span>Sí</span>
+                                        </label>
+                                        <label className={styles.radioLabel}>
+                                            <input
+                                                type="radio"
+                                                name="assistChurch"
+                                                checked={formData.assistChurch === false}
+                                                onChange={() => setFormData({...formData, assistChurch: false})}
+                                                className={styles.radio}
+                                            />
+                                            <span>No</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>
+                                        <span className={styles.requiredLabel}>Asistencia a Boda</span>
+                                        <span className={styles.requiredAsterisk}>*</span>
+                                    </label>
+                                    <div className={styles.radioGroup}>
+                                        <label className={styles.radioLabel}>
+                                            <input
+                                                type="radio"
+                                                name="assist"
+                                                checked={formData.assist === true}
+                                                onChange={() => setFormData({...formData, assist: true})}
+                                                className={styles.radio}
+                                            />
+                                            <span>Sí</span>
+                                        </label>
+                                        <label className={styles.radioLabel}>
+                                            <input
+                                                type="radio"
+                                                name="assist"
+                                                checked={formData.assist === false}
+                                                onChange={() => setFormData({...formData, assist: false})}
+                                                className={styles.radio}
+                                            />
+                                            <span>No</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className={`${styles.formGroup} col-span-1 sm:col-span-2`}>
+                                    <div className={styles.partnersHeader}>
+                                        <label className={styles.label}>
+                                            Acompañantes ({formData.partnersName.length}/3)
+                                        </label>
+                                        {formData.partnersName.length < 3 && (
+                                            <button
+                                                type="button"
+                                                onClick={handleAddPartner}
+                                                className={styles.addPartnerButton}
+                                            >
+                                                <svg 
+                                                    className="w-5 h-5 mr-1" 
+                                                    fill="none" 
+                                                    stroke="currentColor" 
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path 
+                                                        strokeLinecap="round" 
+                                                        strokeLinejoin="round" 
+                                                        strokeWidth={2} 
+                                                        d="M12 4v16m8-8H4" 
+                                                    />
+                                                </svg>
+                                                Agregar Acompañante
+                                            </button>
+                                        )}
+                                    </div>
+                                    
+                                    <div className={styles.partnersContainer}>
+                                        {formData.partnersName.length === 0 && (
+                                            <p className={styles.noPartnersMessage}>
+                                                No hay acompañantes agregados
+                                            </p>
+                                        )}
+                                        {formData.partnersName.map((partner, index) => (
+                                            <div key={index} className={styles.partnerInputGroup}>
+                                                <input
+                                                    type="text"
+                                                    value={partner}
+                                                    onChange={(e) => handlePartnerChange(index, e.target.value)}
+                                                    onFocus={handleFormInteraction}
+                                                    placeholder={`Nombre del acompañante ${index + 1}`}
+                                                    className={styles.input}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemovePartner(index)}
+                                                    className={styles.removePartnerButton}
+                                                >
+                                                    <svg 
+                                                        className="w-5 h-5" 
+                                                        fill="none" 
+                                                        stroke="currentColor" 
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path 
+                                                            strokeLinecap="round" 
+                                                            strokeLinejoin="round" 
+                                                            strokeWidth={2} 
+                                                            d="M6 18L18 6M6 6l12 12" 
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Botón submit al final del formulario */}
+                            <div className="flex justify-end mt-4">
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg
+                                              flex items-center justify-center gap-2
+                                              min-w-[160px] h-10
+                                              transition-all duration-200
+                                              hover:bg-blue-600 hover:scale-[1.02]
+                                              disabled:bg-blue-300 disabled:cursor-not-allowed
+                                              active:scale-[0.98]"
+                                >
+                                    {isLoading ? (
+                                        <span className="flex items-center gap-2">
+                                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                            Registrando...
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-2">
                                             <svg 
-                                                className="w-5 h-5 mr-1" 
+                                                className="w-4 h-4" 
                                                 fill="none" 
                                                 stroke="currentColor" 
                                                 viewBox="0 0 24 24"
@@ -405,52 +486,13 @@ const GuestManagement = ({ onInteraction }) => {
                                                     d="M12 4v16m8-8H4" 
                                                 />
                                             </svg>
-                                            Agregar Acompañante
-                                        </button>
+                                            Registrar Invitado
+                                        </span>
                                     )}
-                                </div>
-                                
-                                <div className={styles.partnersContainer}>
-                                    {formData.partnersName.length === 0 && (
-                                        <p className={styles.noPartnersMessage}>
-                                            No hay acompañantes agregados
-                                        </p>
-                                    )}
-                                    {formData.partnersName.map((partner, index) => (
-                                        <div key={index} className={styles.partnerInputGroup}>
-                                            <input
-                                                type="text"
-                                                value={partner}
-                                                onChange={(e) => handlePartnerChange(index, e.target.value)}
-                                                onFocus={handleFormInteraction}
-                                                placeholder={`Nombre del acompañante ${index + 1}`}
-                                                className={styles.input}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemovePartner(index)}
-                                                className={styles.removePartnerButton}
-                                            >
-                                                <svg 
-                                                    className="w-5 h-5" 
-                                                    fill="none" 
-                                                    stroke="currentColor" 
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path 
-                                                        strokeLinecap="round" 
-                                                        strokeLinejoin="round" 
-                                                        strokeWidth={2} 
-                                                        d="M6 18L18 6M6 6l12 12" 
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
+                                </button>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
