@@ -210,28 +210,29 @@ const Layout = () => {
             <SectionContainer>
 
                {/* Dress section ---------- */}
-               <SectionContainerElement>
-                  <ImageComponent
-                     src={"/assets/images/dress-icon.png"}
-                     alt={"Icono vestimenta"}
-                     margin={"disabled"}
-                  />
-                  <div className="flex flex-col items-center">
-                     <InfoSection
-                        header={'¿Qué puedo vestir?'}
-                        subtitle={''}
-                        lineColorCode={'border-mustard'}
-                     >
-
-                        Formal para la ceremonia y elegante para la recepción. Elige algo cómodo y espectacular. ✨
-                     </InfoSection>
-                     <Button
-                        buttonText={'Mirá el clima ⛅'}
-                        colorCode={'bg-mustard'}
-                        action={'openWeatherModal'}
+               <FeatureWrapper featureKey="WEATHER_FEATURE">
+                  <SectionContainerElement>
+                     <ImageComponent
+                        src={"/assets/images/dress-icon.png"}
+                        alt={"Icono vestimenta"}
+                        margin={"disabled"}
                      />
-                  </div>
-               </SectionContainerElement>
+                     <div className="flex flex-col items-center">
+                        <InfoSection
+                           header={'¿Qué puedo vestir?'}
+                           subtitle={''}
+                           lineColorCode={'border-mustard'}
+                        >
+                           Formal para la ceremonia y elegante para la recepción. Elige algo cómodo y espectacular. ✨
+                        </InfoSection>
+                        <Button
+                           buttonText={'Mirá el clima ⛅'}
+                           colorCode={'bg-mustard'}
+                           action={'openWeatherModal'}
+                        />
+                     </div>
+                  </SectionContainerElement>
+               </FeatureWrapper>
 
                {/* Music section ---------- */}
                {/* <SectionContainerElement>
