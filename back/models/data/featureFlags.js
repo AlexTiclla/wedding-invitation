@@ -44,6 +44,12 @@ const featureFlags = [
         description: "Habilita/deshabilita la funcionalidad de enviar deseos a los novios",
         enabled: false,
         updatedAt: new Date()
+    },
+    {
+        name: "WEATHER_FEATURE",
+        description: "Muestra información del clima para el día del evento",
+        enabled: false,
+        updatedAt: new Date()
     }
 ];
 
