@@ -4,4 +4,27 @@
 
 .title {
     @apply text-2xl font-bold mb-4;
+}
+
+.statsCard {
+    @apply bg-white rounded-lg shadow p-6;
+}
+
+.statsGrid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+@media (max-width: 640px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tableSection {
+    @apply bg-white rounded-lg shadow mt-6;
+}
+
+.contentWrapper {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6;
 } 
