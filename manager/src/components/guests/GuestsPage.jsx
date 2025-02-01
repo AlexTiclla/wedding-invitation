@@ -364,34 +364,66 @@ const GuestsPage = () => {
     };
 
     const handleExportCSV = () => {
-        // Preparar los datos para el CSV
-        const csvData = filteredGuests.map((guest, index) => ({
-            'Número': filteredGuests.length - index,
-            'Nombre': capitalizeWords(guest.fullName),
-            'Teléfono': guest.phone || '',
-            'Acompañantes': (guest.partnersName || []).map(name => capitalizeWords(name)).join(', ') || '-',
-            'Iglesia': guest.assistChurch === null ? 'Pendiente' : 
-                      guest.assistChurch ? 'Confirmado' : 'No Asiste',
-            'Recepción': guest.assist === null ? 'Pendiente' : 
-                    guest.assist ? 'Confirmado' : 'No Asiste'
-        }));
+        try {
+            // Encabezados en el mismo orden que la tabla
+            const headers = [
+                'Número',
+                'Asistió',
+                'Nombre',
+                'Teléfono',
+                'Acompañantes',
+                'Iglesia',
+                'Recepción',
+            ];
 
-        // Convertir a CSV
-        const headers = Object.keys(csvData[0]);
-        const csvContent = [
-            headers.join(','),
-            ...csvData.map(row => headers.map(header => `"${row[header]}"`).join(','))
-        ].join('\n');
+            // Preparar los datos
+            const csvData = sortedGuests.map((guest, index) => {
+                const companions = (guest.partnersName || []).join(', ');
+                return {
+                    numero: sortedGuests.length - index,
+                    asistio: guest.attended ? 'Sí' : 'No',
+                    nombre: capitalizeWords(guest.fullName),
+                    telefono: guest.phone || '',
+                    acompanantes: companions || '-',
+                    iglesia: guest.assistChurch === null ? 'Pendiente' : 
+                            guest.assistChurch ? 'Sí' : 'No',
+                    recepcion: guest.assist === null ? 'Pendiente' : 
+                              guest.assist ? 'Sí' : 'No',
+                };
+            });
 
-        // Crear y descargar el archivo
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'lista_invitados.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            // Convertir a CSV
+            const csvContent = [
+                headers.join(','),
+                ...csvData.map(row => [
+                    row.numero,
+                    row.asistio,
+                    `"${row.nombre}"`,
+                    `"${row.telefono}"`,
+                    `"${row.acompanantes}"`,
+                    row.iglesia,
+                    row.recepcion
+                ].join(','))
+            ].join('\n');
+
+            // Crear y descargar el archivo
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `invitados_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error al exportar CSV:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo exportar el archivo CSV',
+                icon: 'error',
+                confirmButtonColor: '#3b82f6'
+            });
+        }
     };
 
     // Función de scroll
