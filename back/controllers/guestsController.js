@@ -54,6 +54,68 @@ const guestsController = {
             error: 'Error al actualizar el invitado' 
          });
       }
+   },
+
+   updateAttendance: async (req, res) => {
+      const { id } = req.params;
+      const { attended } = req.body;
+
+      try {
+         const guest = await Guest.findByIdAndUpdate(
+            id,
+            { attended },
+            { new: true }
+         );
+
+         if (!guest) {
+            return res.status(404).json({
+               success: false,
+               error: 'Invitado no encontrado'
+            });
+         }
+
+         res.status(200).json({
+            success: true,
+            guest
+         });
+      } catch (error) {
+         console.error(error);
+         res.status(500).json({
+            success: false,
+            error: 'Error al actualizar la asistencia'
+         });
+      }
+   },
+
+   getAttendanceStats: async (req, res) => {
+      try {
+         const stats = await Guest.aggregate([
+            {
+               $group: {
+                  _id: null,
+                  total: { $sum: 1 },
+                  confirmed: { 
+                     $sum: { $cond: [{ $eq: ['$assist', true] }, 1, 0] }
+                  },
+                  attended: { 
+                     $sum: { $cond: [{ $eq: ['$attended', true] }, 1, 0] }
+                  }
+               }
+            }
+         ]);
+
+         res.status(200).json(stats[0] || {
+            total: 0,
+            confirmed: 0,
+            attended: 0
+         });
+      } catch (error) {
+         console.error(error);
+         res.status(500).json({
+            success: false,
+            error: 'Error al obtener estadísticas'
+         });
+      }
    }
 }
 

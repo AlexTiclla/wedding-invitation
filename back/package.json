@@ -11,7 +11,8 @@
     "start": "node ./server.js",
     "guests": "node ./models/data/guests.js",
     "init-features": "node ./models/data/featureFlags.js",
-    "update-phones": "node ./scripts/updatePhoneNumbers.js"
+    "update-phones": "node ./scripts/updatePhoneNumbers.js",
+    "update-attendance": "node ./scripts/updateAttendance.js"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

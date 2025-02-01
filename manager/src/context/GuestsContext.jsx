@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getGuests } from '../services/api';
+import axios from 'axios';
 
 const GuestsContext = createContext();
 
@@ -11,12 +12,12 @@ export const GuestsProvider = ({ children }) => {
     const fetchGuests = async () => {
         try {
             setLoading(true);
-            const data = await getGuests();
-            setGuests(data);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/guests`);
+            setGuests(response.data);
             setError(null);
-        } catch (err) {
+        } catch (error) {
+            console.error('Error fetching guests:', error);
             setError('Error al cargar los invitados');
-            console.error('Error fetching guests:', err);
         } finally {
             setLoading(false);
         }
@@ -27,7 +28,13 @@ export const GuestsProvider = ({ children }) => {
     }, []);
 
     return (
-        <GuestsContext.Provider value={{ guests, loading, error, fetchGuests }}>
+        <GuestsContext.Provider value={{ 
+            guests, 
+            setGuests, 
+            loading, 
+            error, 
+            fetchGuests 
+        }}>
             {children}
         </GuestsContext.Provider>
     );

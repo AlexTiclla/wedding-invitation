@@ -8,9 +8,11 @@ import styles from './GuestsPage.module.css';
 import { updateGuest } from '../../services/api';
 import Swal from 'sweetalert2';
 import EditGuestModal from './EditGuestModal';
+import axios from 'axios';
+import Tooltip from '@mui/material/Tooltip';
 
 const GuestsPage = () => {
-    const { guests, loading, error, fetchGuests } = useGuestsContext();
+    const { guests, loading, error, fetchGuests, setGuests } = useGuestsContext();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [churchFilter, setChurchFilter] = useState('all');
@@ -146,6 +148,71 @@ const GuestsPage = () => {
         return 0;
     });
 
+    const handleAttendanceToggle = async (guestId, currentAttendance) => {
+        try {
+            // Actualizar UI inmediatamente
+            const updatedGuests = guests.map(guest => 
+                guest._id === guestId 
+                    ? { ...guest, attended: !currentAttendance }
+                    : guest
+            );
+            setGuests(updatedGuests);
+
+            // Llamada a la API en segundo plano
+            await axios.patch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/guests/${guestId}/attendance`,
+                { attended: !currentAttendance }
+            );
+        } catch (error) {
+            // Si falla la API, revertir el cambio local
+            const revertedGuests = guests.map(guest => 
+                guest._id === guestId 
+                    ? { ...guest, attended: currentAttendance }
+                    : guest
+            );
+            setGuests(revertedGuests);
+
+            // Notificación discreta de error
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo actualizar la asistencia',
+                icon: 'error',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    };
+
+    const renderAttendanceToggle = (guest) => {
+        return (
+            <div className={styles.toggleWrapper}>
+                <Tooltip 
+                    title={guest.attended ? 'Marcar como no asistió' : 'Marcar como asistió'}
+                    placement="top"
+                >
+                    <button
+                        onClick={() => handleAttendanceToggle(guest._id, guest.attended)}
+                        className={`${styles.attendanceButton} ${guest.attended ? styles.attended : styles.notAttended}`}
+                        aria-pressed={guest.attended}
+                    >
+                        {guest.attended ? (
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : (
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        )}
+                    </button>
+                </Tooltip>
+            </div>
+        );
+    };
+
     const columns = [
         { 
             header: '#',
@@ -158,30 +225,10 @@ const GuestsPage = () => {
             )
         },
         {
-            header: 'Editar',
-            key: 'actions',
-            className: 'w-10 text-center py-1',
-            render: (row) => (
-                <button
-                    onClick={() => handleEdit(row._id)}
-                    title="Editar invitado"
-                    className="p-0.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
-                >
-                    <svg 
-                        className="w-3.5 h-3.5" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                    >
-                        <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2} 
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" 
-                        />
-                    </svg>
-                </button>
-            )
+            header: 'Asistió',
+            key: 'attendance',
+            className: 'w-[80px] text-center align-middle',
+            render: (row) => renderAttendanceToggle(row)
         },
         { 
             header: 'Nombre',
@@ -228,8 +275,8 @@ const GuestsPage = () => {
                 );
             }
         },
-        { 
-            header: 'Asistencia',
+        {
+            header: 'Estado',
             key: 'status',
             className: 'w-[100px] py-1',
             render: (row) => (
@@ -251,6 +298,22 @@ const GuestsPage = () => {
                         <span className="text-xs">Recepción</span>
                     </div>
                 </div>
+            )
+        },
+        {
+            header: 'Editar',
+            key: 'actions',
+            className: 'w-[60px] text-center py-1',
+            render: (row) => (
+                <button
+                    onClick={() => handleEdit(row._id)}
+                    className="p-1.5 text-gray-500 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-colors"
+                    title="Editar invitado"
+                >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                </button>
             )
         }
     ];

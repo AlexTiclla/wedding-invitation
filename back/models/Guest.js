@@ -14,6 +14,7 @@ let invitadoSchema = new Schema({
    dietaryRestrictions: {type: Boolean, default: false},
    dietaryRestrictionsIndications: {type: String, default: ''},
    message: {type: String, default: ''},
+   attended: {type: Boolean, default: false},
 }, {
    timestamps: true
 });

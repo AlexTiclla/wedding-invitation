@@ -173,3 +173,45 @@
 .statusNotAttending {
     @apply bg-rose-50 text-rose-700;
 }
+
+.toggleWrapper {
+    @apply flex items-center justify-center w-full;
+}
+
+.attendanceButton {
+    @apply w-8 h-8 rounded-full 
+    flex items-center justify-center
+    transition-all duration-150 ease-in-out
+    mx-auto;
+}
+
+.attended {
+    @apply bg-green-100 text-green-600 hover:bg-green-200
+    border-2 border-green-500;
+}
+
+.notAttended {
+    @apply bg-orange-50 text-orange-500 hover:bg-orange-100
+    border-2 border-orange-400;
+}
+
+/* Efecto de click */
+.attendanceButton:active {
+    @apply transform scale-90;
+}
+
+/* Quitar los estilos anteriores del label ya que usaremos un tooltip */
+.toggleLabel {
+    @apply sr-only;
+}
+
+/* Versión compacta para móviles */
+@media (max-width: 640px) {
+    .toggleLabel {
+        @apply hidden;
+    }
+    
+    .attendanceToggle {
+        @apply p-1.5;
+    }
+}

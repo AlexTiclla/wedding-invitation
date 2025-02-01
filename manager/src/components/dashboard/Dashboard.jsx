@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Header from '../layout/Header';
 import GuestStats from './GuestStats';
 import GuestTables from './GuestTables';
+import AttendanceStats from './AttendanceStats';
 
 const Dashboard = () => {
     useEffect(() => {
@@ -19,6 +20,7 @@ const Dashboard = () => {
             />
             <div className="px-6">
                 <div className="max-w-7xl mx-auto">
+                    <AttendanceStats />
                     <GuestStats />
                     <GuestTables />
                 </div>
